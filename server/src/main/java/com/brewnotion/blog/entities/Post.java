@@ -1,11 +1,17 @@
 package com.brewnotion.blog.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Entity
 @Table(name="posts")
+@Setter
+@Getter
+@NoArgsConstructor
 public class Post {
 
     @Id
