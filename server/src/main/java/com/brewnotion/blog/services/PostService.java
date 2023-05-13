@@ -1,6 +1,7 @@
 package com.brewnotion.blog.services;
 
 import com.brewnotion.blog.payloads.PostDto;
+import com.brewnotion.blog.payloads.PostResponse;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface PostService {
 
     void deletePost(Integer postId);
 
-    List<PostDto> getAllPost();
+    PostResponse getAllPost(Integer pageNumber, Integer pageSize);
 
     PostDto getPostById(Integer postId);
 
