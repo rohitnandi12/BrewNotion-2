@@ -4,7 +4,6 @@ import com.brewnotion.blog.entities.Category;
 import com.brewnotion.blog.entities.Post;
 import com.brewnotion.blog.entities.User;
 import com.brewnotion.blog.exceptions.ResourceNotFoundException;
-import com.brewnotion.blog.payloads.CategoryDto;
 import com.brewnotion.blog.payloads.PostDto;
 import com.brewnotion.blog.payloads.PostResponse;
 import com.brewnotion.blog.repositories.CategoryRepo;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -80,9 +80,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse getAllPost(Integer pageNumber, Integer pageSize) {
+    public PostResponse getAllPost(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
-        Pageable p = PageRequest.of(pageNumber, pageSize);
+        Sort sort = Sort.by(sortBy);
+        sort = sortDir.equalsIgnoreCase("asc") ? sort.ascending() : sort.descending();
+
+        Pageable p = PageRequest.of(pageNumber, pageSize, sort);
 
         Page<Post> pagePost = this.postRepo.findAll(p);
 
@@ -142,8 +145,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> searchPosts(String query) {
-        return null;
+    public List<PostDto> searchPosts(String title) {
+        List<Post> searchPosts = this.postRepo.findByTitleContaining(title);
+        List<PostDto> postDtos = searchPosts.stream().map(this::postToDto).toList();
+        return postDtos;
+    }
+
+    @Override
+    public List<PostDto> searchPostsByDescription(String desc) {
+        List<Post> searchResults = this.postRepo.searchByDescription("%"+desc+"%");
+        List<PostDto> postDtos = searchResults.stream().map(this::postToDto).toList();
+        return postDtos;
     }
 
     private Post dtoToPost(PostDto postDto) {
